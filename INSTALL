@@ -1,0 +1,9 @@
+Building SourPuss
+
+See doc/readme-qt.rst for instructions on building SourPuss Qt,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of SourPuss.
+
+See doc/build-*.txt for instructions on building SourPussd,
+the intended-for-services, no-graphical-interface, reference
+implementation of SourPuss.

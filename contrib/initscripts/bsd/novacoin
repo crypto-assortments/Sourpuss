@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# PROVIDE: SourPuss
+# REQUIRE: LOGIN
+# KEYWORD: shutdown
+
+#
+# Add the following lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# SourPuss_enable (bool): Set to NO by default. Set this variable to YES if you want to enable SourPuss service.
+# SourPuss_config (path): Set to /usr/local/etc/SourPuss.conf by default.
+# SourPuss_user:  The user account SourPuss daemon runs as. It uses 'root' user by default.
+# SourPuss_group: The group account SourPuss daemon runs as. It uses 'wheel' group by default.
+# SourPuss_datadir (str): Default to "/var/db/SourPuss". Base data directory.
+
+. /etc/rc.subr
+
+name=SourPuss
+rcvar=SourPuss_enable
+
+: ${SourPuss_enable:=NO}
+: ${SourPuss_config=/usr/local/etc/SourPuss.conf}
+: ${SourPuss_datadir=/var/db/SourPuss}
+: ${SourPuss_user="root"}
+: ${SourPuss_group="wheel"}
+
+required_files=${SourPuss_config}
+command=/usr/local/bin/SourPussd
+SourPuss_chdir=${SourPuss_datadir}
+pidfile="${SourPuss_datadir}/SourPussd.pid"
+stop_cmd=SourPuss_stop
+command_args="-conf=${SourPuss_config} -datadir=${SourPuss_datadir} -daemon -pid=${pidfile}"
+start_precmd="${name}_prestart"
+
+SourPuss_create_datadir()
+{
+	echo "Creating data directory"
+	eval mkdir -p ${SourPuss_datadir}
+	[ $? -eq 0 ] && chown -R ${SourPuss_user}:${SourPuss_group} ${SourPuss_datadir}
+}
+
+SourPuss_prestart()
+{
+	if [ ! -d "${SourPuss_datadir}/." ]; then
+		SourPuss_create_datadir || return 1
+	fi
+}
+
+SourPuss_requirepidfile()
+{
+	if [ ! "0`check_pidfile ${pidfile} ${command}`" -gt 1 ]; then
+		echo "${name} not running? (check $pidfile)."
+		exit 1
+	fi
+}
+
+SourPuss_stop()
+{
+    SourPuss_requirepidfile
+
+	echo "Stopping ${name}."
+	eval ${command} -conf=${SourPuss_config} -datadir=${SourPuss_datadir} stop
+	wait_for_pids ${rc_pid}
+}
+
+load_rc_config $name
+run_rc_command "$1"

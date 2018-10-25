@@ -1,0 +1,2 @@
+debian/bin/SourPussd usr/bin
+src/SourPussd usr/lib/SourPuss

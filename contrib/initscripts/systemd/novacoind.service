@@ -1,0 +1,11 @@
+[Unit]
+Description=SourPuss daemon serivce
+After=network.target
+
+[Service]
+Type=simple
+User=SourPuss
+ExecStart=/opt/SourPuss/SourPussd
+
+[Install]
+WantedBy=multi-user.target

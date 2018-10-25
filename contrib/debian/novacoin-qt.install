@@ -1,0 +1,5 @@
+SourPuss-qt usr/bin
+share/pixmaps/SourPuss32.xpm usr/share/pixmaps
+share/pixmaps/SourPuss80.xpm usr/share/pixmaps
+debian/SourPuss-qt.desktop usr/share/applications
+debian/SourPuss-qt.protocol usr/share/kde4/services/
