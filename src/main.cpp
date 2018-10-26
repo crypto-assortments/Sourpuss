@@ -36,7 +36,7 @@ set<pair<COutPoint, unsigned int> > setStakeSeen;
 
 CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // "standard" scrypt target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
 CBigNum bnProofOfStakeLegacyLimit(~uint256(0) >> 20); // proof of stake target limit from block #15000 and until 20 June 2013, results with 0,00390625 proof of stake difficulty
-CBigNum bnProofOfStakeLimit(~uint256(0) >> 20); // proof of stake target limit since 20 June 2013, equal to 0.03125  proof of stake difficulty
+CBigNum bnProofOfStakeLimit(~uint256(0) >> 8); // proof of stake target limit since 20 June 2013, equal to 0.03125  proof of stake difficulty
 CBigNum bnProofOfStakeHardLimit(~uint256(0) >> 20); // disabled temporarily, will be used in the future to fix minimal proof of stake difficulty at 0.25
 uint256 nPoWBase = uint256("0x00000000ffff0000000000000000000000000000000000000000000000000000"); // difficulty-1 target
 
@@ -1043,12 +1043,12 @@ CBigNum inline GetProofOfStakeLimit(int nHeight, unsigned int nTime)
         return bnProofOfStakeLimit;
     if(nTime > TARGETS_SWITCH_TIME) // 27 bits since 20 July 2013
         return bnProofOfStakeLimit;
-    if(nHeight + 1 > 15000) // 24 bits since block 15000
+/*    if(nHeight + 1 > 15000) // 24 bits since block 15000
         return bnProofOfStakeLegacyLimit;
     if(nHeight + 1 > 14060) // 31 bits since block 14060 until 15000
-        return bnProofOfStakeHardLimit;
+        return bnProofOfStakeHardLimit;*/
 
-    return bnProofOfWorkLimit; // return bnProofOfWorkLimit of none matched
+    return bnProofOfStakeLegacyLimit; // return bnProofOfWorkLimit of none matched
 }
 
 // miner's coin base reward based on nBits
@@ -1093,13 +1093,13 @@ static const int64_t nTargetTimespan = 2 * 15 * 60;
 // Not in use right now!
 int64_t inline GetTargetSpacingWorkMax(int nHeight, unsigned int nTime)
 {
-    if(nTime > TARGETS_SWITCH_TIME)
+/*    if(nTime > TARGETS_SWITCH_TIME)
         return 3 * nStakeTargetSpacing; // 30 minutes on mainNet since 20 Jul 2013 00:00:00
 
     if(fTestNet)
         return 3 * nStakeTargetSpacing; // 15 minutes on testNet
-
-    return 12 * nStakeTargetSpacing; // 2 hours otherwise
+*/
+    return 3 * nStakeTargetSpacing; // 2 hours otherwise
 }
 
 //
