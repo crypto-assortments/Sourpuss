@@ -1057,7 +1057,8 @@ int64_t GetProofOfWorkReward(unsigned int nBits, int64_t nFees, int nHeight)
     int64_t nSubsidy = 5 * COIN;
     
 	// Force block reward to zero when right shift is undefined.
-    int halvings = nHeight / 100;
+	int halvings = nHeight / (nHeight > 1100 ? 1000 : 100);
+
     if (halvings >= 10)
         return nFees;
 		
@@ -1080,11 +1081,16 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, unsigned int nBits, int64_t nTim
 
     int64_t nSubsidy = nCoinAge * nRewardCoinYear / 365;
 
+	if (pindexBest->nHeight < 1100)
+		{
+		nSubsidy = max(nSubsidy, nMaxReward);
+		return nSubsidy;
+		}
+		
     if (fDebug && GetBoolArg("-printcreation"))
         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
 
-    nSubsidy = max(nSubsidy, nMaxReward);
-    return nSubsidy; // + nFees;
+    return min(nSubsidy, nMaxReward) ; // + nFees;
 }
 
 static const int64_t nTargetTimespan = 2 * 15 * 60;
@@ -1540,6 +1546,8 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 
                 if (nReward > nCalculatedReward)
                     return DoS(100, error("ConnectInputs() : coinstake pays too much(actual=%" PRId64 " vs calculated=%" PRId64 ")", nReward, nCalculatedReward));
+                if (nReward < nCalculatedReward)
+                    return DoS(100, error("ConnectInputs() : coinstake pays too little(actual=%" PRId64 " vs calculated=%" PRId64 ")", nReward, nCalculatedReward));
             }
         }
         else
@@ -1750,6 +1758,11 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
             return error("CheckBlock() : coinbase reward exceeded (actual=%" PRId64 " vs calculated=%" PRId64 ")",
                    vtx[0].GetValueOut(),
                    nBlockReward);
+                   
+        if (vtx[0].GetValueOut() < nBlockReward)
+            return error("CheckBlock() : coinbase reward is too low (actual=%" PRId64 " vs calculated=%" PRId64 ")",
+                   vtx[0].GetValueOut(),
+                   nBlockReward);        
     }
 
     // track money supply and mint amount info

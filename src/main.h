@@ -34,7 +34,7 @@ class CNode;
 // Global state
 //
 
-static const int LAST_POW_BLOCK = 5000; //
+static const int LAST_POW_BLOCK = 10000; //
 
 static const unsigned int MAX_BLOCK_SIZE = 8000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
@@ -959,14 +959,14 @@ public:
     unsigned int GetStakeEntropyBit(unsigned int nHeight) const
     {
         // Protocol switch to support p2pool at SourPuss block #0
-        if (nHeight >= 0 || fTestNet)
-        {
+//        if (nHeight >= 0 || fTestNet)
+//        {
             // Take last bit of block hash as entropy bit
             unsigned int nEntropyBit = ((GetHash().Get64()) & 1ULL);
             if (fDebug && GetBoolArg("-printstakemodifier"))
                 printf("GetStakeEntropyBit: nTime=%u hashBlock=%s nEntropyBit=%u\n", nTime, GetHash().ToString().c_str(), nEntropyBit);
             return nEntropyBit;
-        }
+/*        }
 
         // Before SourPuss block #0 - get from pregenerated table
         int nBitNum = nHeight & 0xFF;
@@ -975,7 +975,7 @@ public:
         unsigned int nEntropyBit = (unsigned int) ((entropyStore[nItemNum] & (uint256(1) << nBitNum)) >> nBitNum).Get64();
         if (fDebug && GetBoolArg("-printstakemodifier"))
             printf("GetStakeEntropyBit: from pregenerated table, nHeight=%d nEntropyBit=%u\n", nHeight, nEntropyBit);
-        return nEntropyBit;
+        return nEntropyBit;*/
     }
 
     // ppcoin: two types of block: proof-of-work or proof-of-stake
