@@ -66,6 +66,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     obj.push_back(Pair("errors",        GetWarnings("statusbar")));
     obj.push_back(Pair("pooledtx",      (uint64_t)mempool.size()));
 
+    obj.push_back(Pair("staking-enabled", GetBoolArg("-staking", true)));
     obj.push_back(Pair("stakeinputs",   (uint64_t)nStakeInputsMapSize));
     obj.push_back(Pair("stakeinterest", GetProofOfStakeReward(0, GetLastBlockIndex(pindexBest, true)->nBits, GetLastBlockIndex(pindexBest, true)->nTime, true)));
 

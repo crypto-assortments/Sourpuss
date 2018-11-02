@@ -1736,8 +1736,11 @@ void StartNode(void* parg)
         printf("Error; NewThread(ThreadDumpAddress) failed\n");
 
     // Mine proof-of-stake blocks in the background
-    if (!NewThread(ThreadStakeMiner, pwalletMain))
-        printf("Error: NewThread(ThreadStakeMiner) failed\n");
+    if (!GetBoolArg("-staking", true))
+        printf("Staking disabled\n");
+    else
+        if (!NewThread(ThreadStakeMiner, pwalletMain))
+            printf("Error: NewThread(ThreadStakeMiner) failed\n");
 
     // Trusted NTP server, it's localhost by default.
     strTrustedUpstream = GetArg("-ntp", "localhost");
